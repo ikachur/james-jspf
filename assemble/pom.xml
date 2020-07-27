@@ -67,7 +67,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptorSourceDirectory>src/assemble/</descriptorSourceDirectory>
-                    <tarLongFileMode>gnu</tarLongFileMode>
+                    <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
                     <execution>
