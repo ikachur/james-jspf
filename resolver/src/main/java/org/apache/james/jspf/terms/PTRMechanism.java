@@ -23,6 +23,7 @@ package org.apache.james.jspf.terms;
 import org.apache.james.jspf.core.DNSLookupContinuation;
 import org.apache.james.jspf.core.DNSRequest;
 import org.apache.james.jspf.core.DNSResponse;
+import org.apache.james.jspf.core.DNSResult;
 import org.apache.james.jspf.core.DNSService;
 import org.apache.james.jspf.core.DNSServiceEnabled;
 import org.apache.james.jspf.core.IPAddr;
@@ -143,16 +144,14 @@ public class PTRMechanism extends GenericMechanism implements DNSServiceEnabled,
                     domainList = domainList.subList(0, dnsService.getRecordLimit()-1);
                     // throw new PermErrorException("Maximum PTR lookup count reached");
                 }
-                
                 spfSession.setAttribute(ATTRIBUTE_DOMAIN_LIST, domainList);
-                
+                spfSession.setDNSResult(new DNSResult(spfSession.getIpAddress(), "PTR", domainList.toString()));
             } else {
 
                 String compareDomain = (String) spfSession.getAttribute(ATTRIBUTE_CURRENT_DOMAIN);
                 String host = (String) spfSession.getAttribute(ATTRIBUTE_EXPANDED_HOST);
     
                 List<String> aList = response.getResponse();
-    
 
                 if (aList != null) {
                     for (int j = 0; j < aList.size(); j++) {

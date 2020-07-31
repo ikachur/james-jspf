@@ -108,7 +108,8 @@ public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseList
                 }
                 
                 spfSession.setAttribute(ATTRIBUTE_CHECK_RECORDS, records);
-                
+                // -- spfSession.setDNSResult(spfSession.getCurrentDomain() + "," + "#mx#" + records.toString());
+
             } else {
                 
                 List<String> res = response.getResponse();
@@ -119,8 +120,8 @@ public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseList
                         spfSession.setAttribute(ATTRIBUTE_MX_RECORDS, mxR);
                     }
                     mxR.addAll(res);
+                    //spfSession.setDNSResult(spfSession.getCurrentDomain() + "," + "#mx-a#" + res.toString());
                 }
-                
             }
 
             // if the remote IP is an ipv6 we check ipv6 addresses, otherwise ip4
@@ -128,6 +129,7 @@ public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseList
 
             String mx;
             while (records.size() > 0 && (mx = records.remove(0)) != null && mx.length() > 0) {
+                //spfSession.setDNSResult(spfSession.getCurrentDomain() + "#mx#" + mx);
                 LOGGER.debug("Add MX-Record {} to list", mx);
 
                 return new DNSLookupContinuation(new DNSRequest(mx, isIPv6 ? DNSRequest.AAAA : DNSRequest.A), MXMechanism.this);

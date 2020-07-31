@@ -21,6 +21,7 @@ package org.apache.james.jspf.policies;
 
 import org.apache.james.jspf.core.DNSLookupContinuation;
 import org.apache.james.jspf.core.DNSRequest;
+import org.apache.james.jspf.core.DNSResult;
 import org.apache.james.jspf.core.DNSResponse;
 import org.apache.james.jspf.core.SPF1Constants;
 import org.apache.james.jspf.core.SPF1Record;
@@ -58,6 +59,7 @@ public class SPFRetriever implements SPFChecker {
                 spfR = response.getResponse();
                 String record = extractSPFRecord(spfR);
                 if (record != null) {
+                    session.setDNSResult(new DNSResult(session.getCurrentDomain(), "SPF", record));
                     session.setAttribute(SPF1Utils.ATTRIBUTE_SPF1_RECORD, new SPF1Record(record));
                 }
             } catch (TimeoutException e) {
@@ -90,6 +92,7 @@ public class SPFRetriever implements SPFChecker {
                     
                     String record = extractSPFRecord(spfR);
                     if (record != null) {
+                        session.setDNSResult(new DNSResult(session.getCurrentDomain(), "SPF", record));
                         session.setAttribute(SPF1Utils.ATTRIBUTE_SPF1_RECORD, new SPF1Record(record));
                     } else {
                         String currentDomain = session.getCurrentDomain();

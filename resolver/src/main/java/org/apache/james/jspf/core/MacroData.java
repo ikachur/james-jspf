@@ -20,6 +20,8 @@
 
 package org.apache.james.jspf.core;
 
+import java.util.LinkedList;
+
 /**
  * This interface represent all the macros which can be used in SPF-Records.
  * Read more here : http://www.ietf.org/rfc/rfc4408.txt Section 8
@@ -103,5 +105,12 @@ public interface MacroData {
      * @return receivingDomain
      */
     public String getReceivingDomain();
+
+    /**
+     * Get getDNSResults (r)
+     *
+     * @return interim DNS lookup results
+     */
+    public LinkedList<DNSResult> getDNSResults();
 
 }

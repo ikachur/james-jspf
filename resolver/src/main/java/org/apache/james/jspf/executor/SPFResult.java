@@ -20,10 +20,12 @@
 
 package org.apache.james.jspf.executor;
 
+import org.apache.james.jspf.core.DNSResult;
 import org.apache.james.jspf.core.SPF1Utils;
 import org.apache.james.jspf.core.SPFSession;
 import org.apache.james.jspf.core.exceptions.SPFErrorConstants;
 
+import java.util.LinkedList;
 
 /**
  * This class is used to return the result of an SPF lookup.
@@ -38,6 +40,8 @@ public class SPFResult  {
     protected String result = null;
 
     protected String explanation = null;
+
+    protected LinkedList<DNSResult> dnsResults = null;
     
     protected SPFResult() {
         
@@ -61,6 +65,7 @@ public class SPFResult  {
         this.explanation = spfSession.getExplanation();
         this.result = spfSession.getCurrentResultExpanded();
         this.headerTextAsString = generateHeader(result, spfSession);
+        this.dnsResults = spfSession.getDNSResults();
     }
 
     /**
@@ -159,5 +164,13 @@ public class SPFResult  {
         return explanation != null ? explanation : "";
     }
     
+    /**
+     * Get the extended DNS results
+     *
+     * @return extended DNS results
+     */
+    public LinkedList<DNSResult> getDNSResults() {
+        return this.dnsResults;
+    }
     
 }

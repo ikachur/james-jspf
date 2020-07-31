@@ -21,6 +21,7 @@ package org.apache.james.jspf.core;
 
 import org.apache.james.jspf.core.exceptions.PermErrorException;
 
+import java.util.LinkedList;
 import junit.framework.TestCase;
 
 /**
@@ -85,6 +86,12 @@ public class MacroExpandTest extends TestCase {
 
         public String getReceivingDomain() {
             return "receivingdomain";
+        }
+
+        public LinkedList<DNSResult> getDNSResults() {
+            LinkedList<DNSResult> x = new LinkedList<DNSResult>();
+            x.add(new DNSResult("cisco.com", "spf", "v=spf1 redirect=spfa._spf.cisco.com"));
+            return x;
         }
     }
 
