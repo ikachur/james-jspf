@@ -27,7 +27,7 @@ zonedata:
   lyme.eater.example.co.uk.1.2.3.5.spf.example.net:
     - A:    127.0.0.1
   example.co.uk:
-    - TXT:  v=spf1 mx/26 exists:%{l}.%{d}.%{i}.spf.example.net -all
+    - SPF:  v=spf1 mx/26 exists:%{l}.%{d}.%{i}.spf.example.net -all
 
 ---
 description: Permerror detection
@@ -55,15 +55,15 @@ tests:
     result: permerror
 zonedata:
   examplea.com:
-    - TXT:  v=spf1 a mx include:b.com
+    - SPF:  v=spf1 a mx include:b.com
   exampleb.com:
-    - TXT:  v=spf1 a mx include:a.com
+    - SPF:  v=spf1 a mx include:a.com
   examplec.com:
-    - TXT:  v=spf1 -all:foobar
+    - SPF:  v=spf1 -all:foobar
   exampled.com:
-    - TXT:  v=spf1 a:examplea.com:8080
+    - SPF:  v=spf1 a:examplea.com:8080
   examplee.com:
-    - TXT:  v=spf1 ip4:1.2.3.4:8080
+    - SPF:  v=spf1 ip4:1.2.3.4:8080
 ---
 tests:
   nospace1:
@@ -85,13 +85,13 @@ tests:
     result: pass
 zonedata:
   example3.com:
-    - TXT:  v=spf1mx
-    - TXT:  v=spf1 mx
+    - SPF:  v=spf1mx
+    - SPF:  v=spf1 mx
     - MX:   [0, mail.example1.com]
   example1.com:
-    - TXT:  v=spf1
+    - SPF:  v=spf1
   example2.com:
-    - TXT:  v=spf1mx
+    - SPF:  v=spf1mx
   mail.example1.com:
     - A:    1.2.3.4
 
@@ -115,13 +115,13 @@ tests:
     explanation: This is a test.
 zonedata:
   example.com.d.spf.example.com:
-    - TXT: v=spf1 redirect=a.spf.example.com
+    - SPF: v=spf1 redirect=a.spf.example.com
   a.spf.example.com:
-    - TXT: >-
+    - SPF: >-
         v=spf1 mx:example.com include:o.spf.example.com -exists:%{s}.S.bl.spf.example.com
         exists:%{s}.S.%{i}.AI.spf.example.com ~all
   o.spf.example.com:
-    - TXT:  v=spf1 ip4:192.168.144.41 ip4:192.168.218.40 ip4:192.168.218.41
+    - SPF:  v=spf1 ip4:192.168.144.41 ip4:192.168.218.40 ip4:192.168.218.41
   msgbas1x.cos.example.com:
     - A:    192.168.240.36
   example.com:
@@ -129,7 +129,7 @@ zonedata:
     - TXT:  v=spf1 redirect=%{d}.d.spf.example.com.
     - MX:   [10, msgbas1x.cos.example.com]
   exp.example.com:
-    - TXT:  v=spf1 exp=msg.example.com. -all
+    - SPF:  v=spf1 exp=msg.example.com. -all
   msg.example.com:
     - TXT:  This is a test.
 ---
@@ -149,6 +149,6 @@ tests:
 zonedata:
   mail.example.com:
     - MX:   [0, ""]
-    - TXT:  v=spf1 mx
+    - SPF:  v=spf1 mx
   example.com:
-    - TXT:  v=spf1 -all
+    - SPF:  v=spf1 -all
