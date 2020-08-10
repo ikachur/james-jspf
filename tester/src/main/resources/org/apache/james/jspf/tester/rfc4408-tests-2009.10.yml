@@ -1950,7 +1950,7 @@ tests:
     description: |-
       Multiple delimiters may be specified in a macro expression.
         macro-expand = ( "%{" macro-letter transformers *delimiter "}" )
-                        / "%%" / "%_" / "%-"
+                       / "%%" / "%_" / "%-"
     helo: mail.example.com
     host: 1.2.3.4
     mailfrom: foo-bar+zip+quux@e12.example.com
@@ -2211,4 +2211,4 @@ zonedata:
     - A: 1.2.3.9
     - A: 1.2.3.10
     - A: 1.2.3.11
-    - A: 1.2.3.12
+    - A: 1.2.3.12 
