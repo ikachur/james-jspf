@@ -144,6 +144,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <optimize>true</optimize>
+                    <fork>true</fork>
+                    <executable>/usr/bin/javac</executable>
                     <source>${target.jdk}</source>
                     <target>${target.jdk}</target>
                 </configuration>

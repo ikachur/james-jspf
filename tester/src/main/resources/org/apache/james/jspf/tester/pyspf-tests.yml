@@ -126,7 +126,7 @@ zonedata:
     - A:    192.168.240.36
   example.com:
     - A:    192.168.90.76
-    - SPF:  v=spf1 redirect=%{d}.d.spf.example.com.
+    - TXT:  v=spf1 redirect=%{d}.d.spf.example.com.
     - MX:   [10, msgbas1x.cos.example.com]
   exp.example.com:
     - SPF:  v=spf1 exp=msg.example.com. -all

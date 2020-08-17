@@ -1966,7 +1966,7 @@ zonedata:
     - A: 192.168.218.40
   example.com:
     - A: 192.168.90.76
-    - SPF: v=spf1 redirect=%{d}.d.spf.example.com.
+    - TXT: v=spf1 redirect=%{d}.d.spf.example.com.
   exp.example.com:
     - SPF: v=spf1 exp=msg.example.com. -all
   msg.example.com:

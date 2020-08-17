@@ -84,13 +84,16 @@ public class SPFRetriever implements SPFChecker {
                 if (spfR == null || spfR.isEmpty()) {
                     
                     String currentDomain = session.getCurrentDomain();
-                    return new DNSLookupContinuation(new DNSRequest(currentDomain, DNSRequest.TXT), new SPFRecordHandlerDNSResponseListener());
+                    return new DNSLookupContinuation(new DNSRequest(currentDomain, DNSRequest.SPF), new SPFRecordHandlerDNSResponseListener());
 
                 } else {
                     
                     String record = extractSPFRecord(spfR);
                     if (record != null) {
                         session.setAttribute(SPF1Utils.ATTRIBUTE_SPF1_RECORD, new SPF1Record(record));
+                    } else {
+                        String currentDomain = session.getCurrentDomain();
+                        return new DNSLookupContinuation(new DNSRequest(currentDomain, DNSRequest.SPF), new SPFRecordHandlerDNSResponseListener());
                     }
                     
                 }
@@ -107,6 +110,13 @@ public class SPFRetriever implements SPFChecker {
 	/**
 	 * This is used for testing purpose. Setting this to true will skip the initial
 	 * lookups for SPF records and instead will simply check the TXT records.
+     *
+     * Though SPF DNS records were depracated by https://tools.ietf.org/html/rfc7208#section-3.1,
+     * they are still in use by legit senders, e.g.:
+     *  - bousai.okinawa.jp
+     *  - infozech.com
+     *  - tennisvlaanderen.be
+     *  - iutbeziers.fr
 	 */
 	private static final boolean CHECK_ONLY_TXT_RECORDS = false;
     
@@ -155,7 +165,8 @@ public class SPFRetriever implements SPFChecker {
             if (CHECK_ONLY_TXT_RECORDS) {
                 return new DNSLookupContinuation(new DNSRequest(currentDomain, DNSRequest.TXT), new SPFRecordHandlerDNSResponseListener());
             } else {
-                return new DNSLookupContinuation(new DNSRequest(currentDomain, DNSRequest.SPF), new SPFRetrieverDNSResponseListener());
+                // Lookup TXT record first, then SPF record if TXT does not contain valid SPF record.
+                return new DNSLookupContinuation(new DNSRequest(currentDomain, DNSRequest.TXT), new SPFRetrieverDNSResponseListener());
             }
             
         }
