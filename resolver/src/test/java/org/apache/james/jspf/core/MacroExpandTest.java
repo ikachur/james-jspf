@@ -89,9 +89,9 @@ public class MacroExpandTest extends TestCase {
         }
 
         public LinkedList<DNSResult> getDNSResults() {
-            LinkedList<DNSResult> x = new LinkedList<DNSResult>();
-            x.add(new DNSResult("cisco.com", "spf", "v=spf1 redirect=spfa._spf.cisco.com"));
-            return x;
+            LinkedList<DNSResult> dnsResults = new LinkedList<DNSResult>();
+            dnsResults.add(new DNSResult("cisco.com", "spf", "v=spf1 redirect=spfa._spf.cisco.com"));
+            return dnsResults;
         }
     }
 

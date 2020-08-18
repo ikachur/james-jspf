@@ -114,8 +114,8 @@ public class SPFRetriever implements SPFChecker {
 	 * This is used for testing purpose. Setting this to true will skip the initial
 	 * lookups for SPF records and instead will simply check the TXT records.
      *
-     * Though SPF DNS records were depracated by https://tools.ietf.org/html/rfc7208#section-3.1,
-     * they are still in use by legit senders, e.g.:
+     * Though SPF DNS records were deprecated by https://tools.ietf.org/html/rfc7208#section-3.1,
+     * they are still in use, e.g.:
      *  - bousai.okinawa.jp
      *  - infozech.com
      *  - tennisvlaanderen.be
