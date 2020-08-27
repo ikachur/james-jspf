@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.james.jspf.core.DNSLookupContinuation;
 import org.apache.james.jspf.core.DNSRequest;
 import org.apache.james.jspf.core.DNSResponse;
+import org.apache.james.jspf.core.DNSResult;
 import org.apache.james.jspf.core.IPAddr;
 import org.apache.james.jspf.core.MacroExpand;
 import org.apache.james.jspf.core.SPFChecker;
@@ -47,6 +48,9 @@ import org.slf4j.LoggerFactory;
 public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(MXMechanism.class);
 
+    private static final String ATTRIBUTE_CURRENT_QUESTION = "currentQuestion";
+    private static final String ATTRIBUTE_CURRENT_LOOKUP_TYPE = "currentLookupType";
+
     private final class ExpandedChecker implements SPFChecker {
         
         /**
@@ -57,7 +61,7 @@ public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseList
 
             // Get the right host.
             String host = expandHost(spfData);
-            
+            spfData.setAttribute(ATTRIBUTE_CURRENT_QUESTION, host);
             return new DNSLookupContinuation(new DNSRequest(host, DNSRequest.MX), MXMechanism.this);
         }
     }
@@ -104,10 +108,12 @@ public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseList
                 if (records == null) {
                     // no mx record found
                     spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.FALSE);
+                    spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "MX", new ArrayList<String>()));
                     return null;
                 }
                 
                 spfSession.setAttribute(ATTRIBUTE_CHECK_RECORDS, records);
+                spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "MX", new ArrayList<String>(records)));
 
             } else {
                 
@@ -119,6 +125,11 @@ public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseList
                         spfSession.setAttribute(ATTRIBUTE_MX_RECORDS, mxR);
                     }
                     mxR.addAll(res);
+                    spfSession.setDNSResult(new DNSResult(
+                        (String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION),
+                        (String) spfSession.getAttribute(ATTRIBUTE_CURRENT_LOOKUP_TYPE),
+                        new ArrayList<String>(res)
+                    ));
                 }
 
             }
@@ -130,6 +141,8 @@ public class MXMechanism extends AMechanism implements SPFCheckerDNSResponseList
             while (records.size() > 0 && (mx = records.remove(0)) != null && mx.length() > 0) {
                 LOGGER.debug("Add MX-Record {} to list", mx);
 
+                spfSession.setAttribute(ATTRIBUTE_CURRENT_QUESTION, mx);
+                spfSession.setAttribute(ATTRIBUTE_CURRENT_LOOKUP_TYPE, isIPv6 ? "AAAA" : "A");
                 return new DNSLookupContinuation(new DNSRequest(mx, isIPv6 ? DNSRequest.AAAA : DNSRequest.A), MXMechanism.this);
                 
             }

@@ -92,7 +92,7 @@ public class SPFRetriever implements SPFChecker {
                     
                     String record = extractSPFRecord(spfR);
                     if (record != null) {
-                        session.setDNSResult(new DNSResult(session.getCurrentDomain(), "SPF", record));
+                        session.setDNSResult(new DNSResult(session.getCurrentDomain(), "TXT", record));
                         session.setAttribute(SPF1Utils.ATTRIBUTE_SPF1_RECORD, new SPF1Record(record));
                     } else {
                         String currentDomain = session.getCurrentDomain();

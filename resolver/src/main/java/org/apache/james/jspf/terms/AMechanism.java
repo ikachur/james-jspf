@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.james.jspf.core.DNSLookupContinuation;
 import org.apache.james.jspf.core.DNSRequest;
 import org.apache.james.jspf.core.DNSResponse;
+import org.apache.james.jspf.core.DNSResult;
 import org.apache.james.jspf.core.IPAddr;
 import org.apache.james.jspf.core.Inet6Util;
 import org.apache.james.jspf.core.MacroExpand;
@@ -49,6 +50,7 @@ public class AMechanism extends GenericMechanism implements SPFCheckerDNSRespons
     private static final Logger LOGGER = LoggerFactory.getLogger(AMechanism.class);
 
     private static final String ATTRIBUTE_AMECHANISM_IPV4CHECK = "AMechanism.ipv4check";
+    private static final String ATTRIBUTE_CURRENT_QUESTION = "currentQuestion";
 
     /**
      * ABNF: A = "a" [ ":" domain-spec ] [ dual-cidr-length ]
@@ -72,6 +74,7 @@ public class AMechanism extends GenericMechanism implements SPFCheckerDNSRespons
                 TempErrorException, NeutralException, NoneException {
             // Get the right host.
             String host = expandHost(spfData);
+            spfData.setAttribute(ATTRIBUTE_CURRENT_QUESTION, host);
 
             // get the ipAddress
             try {
@@ -265,6 +268,7 @@ public class AMechanism extends GenericMechanism implements SPFCheckerDNSRespons
         // no a records just return null
         if (listAData == null) {
             spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.FALSE);
+            spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "A", new ArrayList<String>()));
             return null;
         }
 
@@ -276,6 +280,7 @@ public class AMechanism extends GenericMechanism implements SPFCheckerDNSRespons
 
             if (checkAddressList(checkAddress, listAData, getIp4cidr())) {
                 spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.TRUE);
+                spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "A", new ArrayList<String>(listAData)));
                 return null;
             }
 
@@ -286,12 +291,14 @@ public class AMechanism extends GenericMechanism implements SPFCheckerDNSRespons
             
             if (checkAddressList(checkAddress, listAData, getIp6cidr())) {
                 spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.TRUE);
+                spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "AAAA", new ArrayList<String>(listAData)));
                 return null;
             }
 
         }
         
         spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.FALSE);
+        spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "A", new ArrayList<String>(listAData)));
         return null;
     }
 

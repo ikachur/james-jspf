@@ -38,6 +38,7 @@ import org.apache.james.jspf.core.exceptions.PermErrorException;
 import org.apache.james.jspf.core.exceptions.TempErrorException;
 import org.apache.james.jspf.core.exceptions.TimeoutException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,6 +46,8 @@ import java.util.List;
  * 
  */
 public class PTRMechanism extends GenericMechanism implements DNSServiceEnabled, SPFCheckerDNSResponseListener {
+
+    private static final String ATTRIBUTE_CURRENT_LOOKUP_TYPE = "currentLookupType";
 
     private final class ExpandedChecker implements SPFChecker {
         private CleanupChecker cleanupChecker = new CleanupChecker();
@@ -134,6 +137,7 @@ public class PTRMechanism extends GenericMechanism implements DNSServiceEnabled,
                 // No PTR records found
                 if (domainList == null) {
                     spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.FALSE);
+                    spfSession.setDNSResult(new DNSResult(spfSession.getIpAddress(), "PTR", new ArrayList<String>()));
                     return null;
                 }
         
@@ -145,7 +149,7 @@ public class PTRMechanism extends GenericMechanism implements DNSServiceEnabled,
                     // throw new PermErrorException("Maximum PTR lookup count reached");
                 }
                 spfSession.setAttribute(ATTRIBUTE_DOMAIN_LIST, domainList);
-                spfSession.setDNSResult(new DNSResult(spfSession.getIpAddress(), "PTR", domainList.toString()));
+                spfSession.setDNSResult(new DNSResult(spfSession.getIpAddress(), "PTR", new ArrayList<String>(domainList)));
             } else {
 
                 String compareDomain = (String) spfSession.getAttribute(ATTRIBUTE_CURRENT_DOMAIN);
@@ -156,6 +160,7 @@ public class PTRMechanism extends GenericMechanism implements DNSServiceEnabled,
                 if (aList != null) {
                     for (int j = 0; j < aList.size(); j++) {
                         // Added the IPAddr parsing/toString to have matching in IPV6 multiple ways to 
+                        spfSession.setDNSResult(new DNSResult(host, (String) spfSession.getAttribute(ATTRIBUTE_CURRENT_LOOKUP_TYPE), new ArrayList<String>(aList)));
                         if (IPAddr.getAddress((String) aList.get(j)).getIPAddress().equals(IPAddr.getAddress(spfSession.getIpAddress()).getIPAddress())) {
                             
                             if (compareDomain.equals(host)
@@ -165,6 +170,8 @@ public class PTRMechanism extends GenericMechanism implements DNSServiceEnabled,
                             }
                         }
                     }
+                } else {
+                    spfSession.setDNSResult(new DNSResult(host, (String) spfSession.getAttribute(ATTRIBUTE_CURRENT_LOOKUP_TYPE), new ArrayList<String>()));
                 }
             
             }
@@ -181,9 +188,11 @@ public class PTRMechanism extends GenericMechanism implements DNSServiceEnabled,
             if (IPAddr.isIPV6(spfSession.getIpAddress())) {
                 // Get aaaa record for this
                 dnsRequest = new DNSRequest(currentDomain, DNSRequest.AAAA);
+                spfSession.setAttribute(ATTRIBUTE_CURRENT_LOOKUP_TYPE, "AAAA");
             } else {
                 // Get a record for this
                 dnsRequest = new DNSRequest(currentDomain, DNSRequest.A);
+                spfSession.setAttribute(ATTRIBUTE_CURRENT_LOOKUP_TYPE, "A");
             }
             
             spfSession.setAttribute(ATTRIBUTE_CURRENT_DOMAIN, currentDomain);

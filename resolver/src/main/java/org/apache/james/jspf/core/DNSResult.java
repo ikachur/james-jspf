@@ -1,31 +1,42 @@
 package org.apache.james.jspf.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DNSResult {
 
-    private String domain;
+    private String question;
     private String dnsRecordType;
-    private String dnsResult;
+    private ArrayList<String> dnsResult;
 
-    public DNSResult(String domain, String dnsRecordType, String dnsResult) {
-        this.domain = domain;
+    public DNSResult(String question, String dnsRecordType, ArrayList<String> dnsResult) {
+        this.question = question;
         this.dnsRecordType = dnsRecordType.toUpperCase();
         this.dnsResult = dnsResult;
     }
 
-    public String getDomain() {
-        return domain;
+    public DNSResult(String question, String dnsRecordType, String singleRecord) {
+        this.question = question;
+        this.dnsRecordType = dnsRecordType.toUpperCase();
+        ArrayList<String> singleRecordContainer = new ArrayList<String>();
+        singleRecordContainer.add(singleRecord);
+        this.dnsResult = singleRecordContainer;
+    }
+
+    public String getQuestion() {
+        return question;
     }
 
     public String getDnsRecordType() {
         return dnsRecordType;
     }
 
-    public String getDnsResult() {
+    public ArrayList<String> getDnsResult() {
         return dnsResult;
     }
 
     public String toString() {
-        return getDomain() + ", " + getDnsRecordType() + ": '" + getDnsResult() + "'";
+        return getQuestion() + ", " + getDnsRecordType() + " record: " + getDnsResult().toString();
     }
 
 }

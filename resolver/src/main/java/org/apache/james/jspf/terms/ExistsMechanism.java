@@ -23,6 +23,7 @@ package org.apache.james.jspf.terms;
 import org.apache.james.jspf.core.DNSLookupContinuation;
 import org.apache.james.jspf.core.DNSRequest;
 import org.apache.james.jspf.core.DNSResponse;
+import org.apache.james.jspf.core.DNSResult;
 import org.apache.james.jspf.core.MacroExpand;
 import org.apache.james.jspf.core.SPFChecker;
 import org.apache.james.jspf.core.SPFCheckerDNSResponseListener;
@@ -34,12 +35,15 @@ import org.apache.james.jspf.core.exceptions.PermErrorException;
 import org.apache.james.jspf.core.exceptions.TempErrorException;
 import org.apache.james.jspf.core.exceptions.TimeoutException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class represent the exists mechanism
  */
 public class ExistsMechanism extends GenericMechanism implements SPFCheckerDNSResponseListener {
+
+    private static final String ATTRIBUTE_CURRENT_QUESTION = "currentQuestion";
 
     private final class ExpandedChecker implements SPFChecker {
        
@@ -50,6 +54,7 @@ public class ExistsMechanism extends GenericMechanism implements SPFCheckerDNSRe
     	public DNSLookupContinuation checkSPF(SPFSession spfData) throws PermErrorException,
                 TempErrorException, NeutralException, NoneException {
             String host = expandHost(spfData);
+            spfData.setAttribute(ATTRIBUTE_CURRENT_QUESTION, host);
             return new DNSLookupContinuation(new DNSRequest(host,DNSRequest.A), ExistsMechanism.this);
         }
     }
@@ -89,11 +94,13 @@ public class ExistsMechanism extends GenericMechanism implements SPFCheckerDNSRe
         
         if (aRecords != null && aRecords.size() > 0) {
             spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.TRUE);
+            spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "A", new ArrayList<String>(aRecords)));
             return null;
         }
         
         // No match found
         spfSession.setAttribute(Directive.ATTRIBUTE_MECHANISM_RESULT, Boolean.FALSE);
+        spfSession.setDNSResult(new DNSResult((String) spfSession.getAttribute(ATTRIBUTE_CURRENT_QUESTION), "A", new ArrayList<String>()));
         return null;
     }
 
