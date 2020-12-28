@@ -23,6 +23,7 @@ package org.apache.james.jspf.core;
 import org.apache.james.jspf.core.exceptions.PermErrorException;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Stack;
 
@@ -74,6 +75,8 @@ public class SPFSession implements MacroData {
     
     private String currentResultExpanded;
     
+    private LinkedList<DNSResult> dnsResults = new LinkedList<DNSResult>();
+
     /**
      * Build the SPFSession from the given parameters
      * 
@@ -172,6 +175,21 @@ public class SPFSession implements MacroData {
     }
 
     /**
+     * @see org.apache.james.jspf.core.MacroData#getDNSResults()
+     */
+    public LinkedList<DNSResult> getDNSResults() {
+        return dnsResults;
+    }
+
+    /**
+     * Adds the new dns result
+     * @param dnsRequestResponse the new dns request-response
+     */
+    public void setDNSResult(DNSResult dnsRequestResponse) {
+        this.dnsResults.add(dnsRequestResponse);
+    }
+
+    /**
      * @see org.apache.james.jspf.core.MacroData#getSenderDomain()
      */
     public String getSenderDomain() {
@@ -247,7 +265,7 @@ public class SPFSession implements MacroData {
         if (currentDepth > MAX_DEPTH)
             throw new PermErrorException(
                     "Maximum mechanism/modifiers calls done: "
-                        + currentDepth);
+                        + currentDepth + "for (" + this.mailFrom + ", " + this.hostName + ")");
     }
 
     /**

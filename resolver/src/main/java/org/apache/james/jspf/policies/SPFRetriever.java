@@ -21,6 +21,7 @@ package org.apache.james.jspf.policies;
 
 import org.apache.james.jspf.core.DNSLookupContinuation;
 import org.apache.james.jspf.core.DNSRequest;
+import org.apache.james.jspf.core.DNSResult;
 import org.apache.james.jspf.core.DNSResponse;
 import org.apache.james.jspf.core.SPF1Constants;
 import org.apache.james.jspf.core.SPF1Record;
@@ -58,6 +59,7 @@ public class SPFRetriever implements SPFChecker {
                 spfR = response.getResponse();
                 String record = extractSPFRecord(spfR);
                 if (record != null) {
+                    session.setDNSResult(new DNSResult(session.getCurrentDomain(), "SPF", record));
                     session.setAttribute(SPF1Utils.ATTRIBUTE_SPF1_RECORD, new SPF1Record(record));
                 }
             } catch (TimeoutException e) {
@@ -90,6 +92,7 @@ public class SPFRetriever implements SPFChecker {
                     
                     String record = extractSPFRecord(spfR);
                     if (record != null) {
+                        session.setDNSResult(new DNSResult(session.getCurrentDomain(), "TXT", record));
                         session.setAttribute(SPF1Utils.ATTRIBUTE_SPF1_RECORD, new SPF1Record(record));
                     } else {
                         String currentDomain = session.getCurrentDomain();
@@ -111,8 +114,8 @@ public class SPFRetriever implements SPFChecker {
 	 * This is used for testing purpose. Setting this to true will skip the initial
 	 * lookups for SPF records and instead will simply check the TXT records.
      *
-     * Though SPF DNS records were depracated by https://tools.ietf.org/html/rfc7208#section-3.1,
-     * they are still in use by legit senders, e.g.:
+     * Though SPF DNS records were deprecated by https://tools.ietf.org/html/rfc7208#section-3.1,
+     * they are still in use, e.g.:
      *  - bousai.okinawa.jp
      *  - infozech.com
      *  - tennisvlaanderen.be
